@@ -1,0 +1,37 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'  # Update to the version you're using
+
+    - name: Build
+      run: dotnet build -c Release
+
+    - name: Publish
+      run: dotnet publish -c Release -o publish
+
+  release:
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    steps:
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: app-artifact
+        path: build/publish
